@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ucapan Ulang Tahun</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: black;
+      color: white;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .next-page {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #ff69b4;
+      z-index: 2;
+    }
+
+    .next-page h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      animation: bounce 1.5s infinite;
+    }
+
+    .next-page p {
+      font-size: 1.2rem;
+      margin: 10px 0;
+      animation: fade 2s infinite;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 20px;
+      z-index: 2;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .btn:hover {
+      background: #ff1493;
+    }
+
+    #flowers-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .flower {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/2917/2917997.png'); /* Gambar bunga */
+      background-size: cover;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        top: -50px;
+        transform: rotate(0deg);
+      }
+      100% {
+        top: 100vh;
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    @keyframes fade {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animasi Kembang Api -->
+  <canvas id="fireworks"></canvas>
+
+  <!-- Animasi Halaman Kedua -->
+  <div class="next-page" id="birthday-message">
+    <h1>🎉 Selamat Ulang Tahun 🎉</h1>
+    <p>💐 Erpin Padilah 💐</p>
+    <p>🎂 Semoga bahagia selalu! 🎂</p>
+    <p>🎈 Semoga sukses & sehat selalu! 🎈</p>
+  </div>
+
+  <!-- Tombol Lanjutkan -->
+  <button class="btn" id="next-btn">Lanjutkan</button>
+
+  <!-- Animasi Bunga Jatuh -->
+  <div id="flowers-container"></div>
+
+  <script>
+    // Kembang Api
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const fireworks = [];
+    class Firework {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 4 + 2;
+        this.life = 0;
+        this.maxLife = 50;
+        this.vx = Math.random() * 6 - 3;
+        this.vy = Math.random() * 6 - 3;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life++;
+      }
+    }
+
+    function createFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      for (let i = 0; i < 50; i++) {
+        fireworks.push(new Firework(x, y, color));
+      }
+    }
+
+    function animateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach((firework, index) => {
+        firework.draw();
+        firework.update();
+        if (firework.life > firework.maxLife) {
+          fireworks.splice(index, 1);
+        }
+      });
+      requestAnimationFrame(animateFireworks);
+    }
+
+    setInterval(createFirework, 500);
+    animateFireworks();
+
+    // Animasi Bunga Jatuh
+    function createFallingFlower() {
+      const flower = document.createElement('div');
+      flower.classList.add('flower');
+      flower.style.left = `${Math.random() * window.innerWidth}px`;
+      flower.style.animationDuration = `${Math.random() * 3 + 2}s`;
+      flower.style.animationDelay = `${Math.random() * 2}s`;
+
+      document.getElementById('flowers-container').appendChild(flower);
+
+      setTimeout(() => {
+        flower.remove();
+      }, 5000); // Menghapus bunga setelah 5 detik
+    }
+
+    setInterval(createFallingFlower, 200);
+
+    // Tombol Lanjutkan
+    const nextBtn = document.getElementById('next-btn');
+    const birthdayMessage = document.getElementById('birthday-message');
+
+    nextBtn.addEventListener('click', () => {
+      nextBtn.style.display = 'none';
+      birthdayMessage.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
